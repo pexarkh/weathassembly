@@ -72,6 +72,7 @@ func RetrieveForecastForPlace(zip, ip string) (*PlaceWeatherForecasts, error) {
 			_zip, _ = jsonparser.GetString([]byte(resp), "geobytescityid")
 		}
 	}
+	log.Printf("api.zippopotam.us about to be called for zip: %s\n", _zip)
 	resp, err := retrieveZippopotam(_zip)
 	if err != nil {
 		log.Printf("api.zippopotam.us failed: %v\n", err)

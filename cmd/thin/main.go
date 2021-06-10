@@ -23,12 +23,12 @@ func main() {
 	wssLoc.Set("onclick", cb1)
 
 	forever := make(chan bool)
-	retrieveServerRendered("", "")
+	retrieveServerRendered("02135", "")
 	<-forever
 }
 
 func retrieveServerRendered(zip, ip string) {
-	html, err := rest.GetUrl("http://localhost:3131/?zip=" + zip + "&ip=" + ip)
+	html, err := rest.GetUrl("http://localhost:3131/api?zip=" + zip + "&ip=" + ip)
 	if err != nil {
 		log.Printf("%+v", err)
 	} else {
@@ -37,6 +37,8 @@ func retrieveServerRendered(zip, ip string) {
 }
 
 func WssCurrentLocation(this js.Value, args []js.Value) interface{} {
+	log.Printf("WssCurrentLocation: this: %v", this)
+	log.Printf("WssCurrentLocation: args: %v", args)
 	go func() {
 		retrieveServerRendered("", "")
 	}()
@@ -46,6 +48,8 @@ func WssCurrentLocation(this js.Value, args []js.Value) interface{} {
 }
 
 func WssSearchOnSubmit(this js.Value, args []js.Value) interface{} {
+	log.Printf("WssSearchOnSubmit: this: %v", this)
+	log.Printf("WssSearchOnSubmit: args: %v", args)
 	wssZip := js.Global().Get("document").Call("getElementById", "WssZip")
 	if zip := wssZip.Get("value").String(); isValidZip(zip) {
 		go func() {

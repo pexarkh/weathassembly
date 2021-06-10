@@ -15,7 +15,7 @@ make bootstrap # to refresh wasm_exec.js
 then
 
 ```
-mk server
+make server
 cd static
 ../server
 ```

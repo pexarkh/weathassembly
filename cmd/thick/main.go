@@ -12,12 +12,12 @@ import (
 
 func main() {
 	js.Global().Set("WssNavToggleOnClick", js.FuncOf(WssNavToggleOnClick))
-	//cb0 := js.NewEventCallback(js.PreventDefault, WssSearchOnSubmit)
+
 	cb0 := js.FuncOf(WssSearchOnSubmit)
 	wssSearch := js.Global().Get("document").Call("getElementById", "WssSearch")
 	wssSearch.Set("onsubmit", cb0)
 	wssSearch.Set("onclick", cb0)
-	//cb1 := js.NewEventCallback(js.PreventDefault, WssCurrentLocation)
+
 	cb1 := js.FuncOf(WssCurrentLocation)
 	wssLoc := js.Global().Get("document").Call("getElementById", "WssCurrentLocation")
 	wssLoc.Set("onsubmit", cb1)
@@ -28,7 +28,7 @@ func main() {
 	_ = pongo2.RegisterFilter("TopStartTime", pongoutils.TopStartTime)
 
 	forever := make(chan bool)
-	retrieveAndRenderWeb("10001", "165.225.39.62")
+	retrieveAndRenderWeb("10001", "")
 	<-forever
 }
 
@@ -50,7 +50,7 @@ func WssCurrentLocation(this js.Value, args []js.Value) interface{} {
 	log.Printf("WssCurrentLocation: this: %v", this)
 	log.Printf("WssCurrentLocation: args: %v", args)
 	go func() {
-		retrieveAndRenderWeb("02135", "165.225.39.62")
+		retrieveAndRenderWeb("10001", "")
 	}()
 	f := js.Global().Get("document").Call("querySelector", "#WssNav")
 	f.Get("classList").Call("toggle", "is-open")
@@ -63,7 +63,7 @@ func WssSearchOnSubmit(this js.Value, args []js.Value) interface{} {
 	wssZip := js.Global().Get("document").Call("getElementById", "WssZip")
 	if zip := wssZip.Get("value").String(); weather.IsValidZip(zip) {
 		go func() {
-			retrieveAndRenderWeb(zip, "165.225.39.62")
+			retrieveAndRenderWeb(zip, "")
 		}()
 		f := js.Global().Get("document").Call("querySelector", "#WssNav")
 		f.Get("classList").Call("toggle", "is-open")
