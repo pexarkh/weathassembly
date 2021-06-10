@@ -2,17 +2,7 @@ package wssfts
 
 import (
 	"errors"
-	"io"
-	"io/ioutil"
-	"log"
 	"net"
-	"net/http"
-	"strconv"
-	"strings"
-	"time"
-
-	"github.com/pexarkh/weathassembly/consts"
-	"github.com/pexarkh/weathassembly/weather"
 )
 
 //----- THESE FUNCTIONS TURNED OUT TO BE UNNECESSARY -----
@@ -62,60 +52,4 @@ func externalIP() (string, error) {
 		}
 	}
 	return "", errors.New("are you connected to the network?")
-}
-
-func PostUrlJson(url, body string) (string, error) {
-	var hclient = &http.Client{
-		Timeout: time.Second * 10,
-	}
-	resp, err := hclient.Post(url, "application/json", strings.NewReader(body))
-	if err != nil {
-		return "", err
-	}
-	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return "", errors.New("StatusCode: " + strconv.Itoa(resp.StatusCode))
-	}
-	b, err := ioutil.ReadAll(resp.Body)
-	defer resp.Body.Close()
-	if err != nil {
-		return "", err
-	}
-	return string(b), nil
-}
-
-func retrieveAndRenderServer(zip, ip string) (string, error) {
-	pfc, err := weather.RetrieveForecastForPlace(zip, ip)
-	if err != nil {
-		log.Printf("ERROR: %s", err)
-		return "", err
-	}
-	log.Printf("%s\n", pfc)
-	html, err := weather.Render(consts.ForecastFragment, pfc)
-	if err != nil {
-		log.Printf("ERROR: %s", err)
-		return "", err
-	}
-	log.Printf("%s\n", html)
-	return html, nil
-}
-
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	zips, zipok := r.URL.Query()["zip"]
-	gotzip := zipok && len(zips) >= 1
-	ips, ipok := r.URL.Query()["ip"]
-	gotip := ipok && len(ips) >= 1
-	if gotzip && gotip {
-		zip := zips[0]
-		ip := ips[0]
-		log.Printf("zip (%d): [%s] ip (%d): [%s]", len(zip), zip, len(ip), ip)
-		out, err := retrieveAndRenderServer(zip, ip)
-		if err != nil {
-			log.Printf("%+v", err)
-			io.WriteString(w, "")
-		} else {
-			io.WriteString(w, out)
-		}
-	} else {
-		http.Redirect(w, r, "index.html", 301)
-	}
 }

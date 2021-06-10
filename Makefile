@@ -1,5 +1,17 @@
+.PHONY: info
+info:
+	@echo "TARGETS:"
+	@echo "  bootstrap"
+	@echo "  thick"
+	@echo "  thin"
+	@echo "  console"
+	@echo "  server"
+	@echo "  clean"
+
 .PHONY: bootstrap
 bootstrap:
+	go get github.com/flosch/pongo2
+	go get github.com/buger/jsonparser
 	cp -v $(shell go env GOROOT)"/misc/wasm/wasm_exec.js" static/
 
 .PHONY: thick
@@ -21,8 +33,3 @@ server:
 .PHONY: clean
 clean:weather
 	rm -vf console server console.log static/weather.wasm
-
-.PHONY: get
-get:
-	go get github.com/flosch/pongo2
-	go get github.com/buger/jsonparser
