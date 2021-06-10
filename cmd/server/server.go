@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/ztrue/tracerr"
+
 	"github.com/flosch/pongo2"
 	"github.com/pexarkh/weathassembly/consts"
 	"github.com/pexarkh/weathassembly/pongoutils"
@@ -36,17 +38,19 @@ func wasmHandler(w http.ResponseWriter, r *http.Request) {
 		ips, ipok := r.URL.Query()["ip"]
 		if !zipok {
 			http.Error(w,"bad or missing zip code",http.StatusBadRequest)
+			return
 		} else {
 			zip := strings.TrimSpace(zips[0])
 			var ip string
 			if ipok {
 				ip = strings.TrimSpace(ips[0])
 			}
-			io.WriteString(w, fmt.Sprintf("[%s] [%s]", zip, ip))
-
 			out, err := retrieveAndRenderServer(zip, ip)
 			if err != nil {
+				frames := tracerr.StackTrace(err)
+				log.Printf("%#v\n", frames)
 				http.Error(w,fmt.Sprintf("%v", err),http.StatusInternalServerError)
+				return
 			} else {
 				io.WriteString(w, out)
 			}
