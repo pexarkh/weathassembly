@@ -10,9 +10,7 @@ info:
 
 .PHONY: bootstrap
 bootstrap:
-	go get github.com/flosch/pongo2
-	go get github.com/buger/jsonparser
-	go get github.com/ztrue/tracerr
+	go mod tidy
 	cp -v $(shell go env GOROOT)"/misc/wasm/wasm_exec.js" static/
 
 .PHONY: thick

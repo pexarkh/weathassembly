@@ -3,16 +3,17 @@
 ## Prereqs
 
 ```
-go get github.com/flosch/pongo2
-go get github.com/buger/jsonparser
+go mod tidy
 make bootstrap # to refresh wasm_exec.js
 ```
 
 ## Build and run
 
+### build wasm
+
 `make thick` or `make thin`
 
-then
+### then run
 
 ```
 make server
